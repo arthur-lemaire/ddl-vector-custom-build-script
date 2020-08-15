@@ -138,7 +138,7 @@ function buildcustom()
   sudo umount ${dir}edits
   echo "Figuring out SHA256 sum and putting it into manifest."
   sysfssum=$(sha256sum ${dir}apq8009-robot-sysfs.img | head -c 64)
-  sudo printf '%s\n' '[META]' 'manifest_version=1.0.0' 'update_version='${base}'.'${code}'d' 'ankidev=1' 'num_images=2' '[BOOT]' 'encryption=1' 'delta=0' 'compression=gz' 'wbits=31' 'bytes=14372864' 'sha256=a3baaa5bbcb5d5698495eb157c14412fbc56cd07781f6f2ebc3cb698a1dfb2f8' '[SYSTEM]' 'encryption=1' 'delta=0' 'compression=gz' 'wbits=31' 'bytes=608743424' 'sha256='${sysfssum} >${refo}/manifest.ini
+  sudo printf '%s\n' '[META]' 'manifest_version=1.0.0' 'update_version='${base}'.'${code}'d' 'ankidev=1' 'num_images=2' '[BOOT]' 'encryption=1' 'delta=0' 'compression=gz' 'wbits=31' 'bytes=13795328' 'sha256=' '[SYSTEM]' 'encryption=1' 'delta=0' 'compression=gz' 'wbits=31' 'bytes=608743424' 'sha256='${sysfssum} >${refo}/manifest.ini
   echo "Putting into tar."
   sudo tar -C ${refo} -cvf ${refo}/temp.tar manifest.ini
   sudo tar -C ${refo} -rf ${refo}/temp.tar apq8009-robot-boot.img.gz
