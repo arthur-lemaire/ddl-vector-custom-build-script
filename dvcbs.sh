@@ -138,7 +138,7 @@ function buildcustom()
   sudo umount ${dir}edits
   echo "Figuring out SHA256 sum and putting it into manifest."
   sysfssum=$(sha256sum ${dir}apq8009-robot-sysfs.img | head -c 64)
-  sudo printf '%s\n' '[META]' 'manifest_version=1.0.0' 'update_version='${base}'.'${code}'d' 'ankidev=1' 'num_images=2' '[BOOT]' 'encryption=1' 'delta=0' 'compression=gz' 'wbits=31' 'bytes=13795328' 'sha256=' '[SYSTEM]' 'encryption=1' 'delta=0' 'compression=gz' 'wbits=31' 'bytes=608743424' 'sha256='${sysfssum} >${refo}/manifest.ini
+  sudo printf '%s\n' '[META]' 'manifest_version=1.0.0' 'update_version='${base}'.'${code}'d' 'ankidev=1' 'num_images=2' '[BOOT]' 'encryption=1' 'delta=0' 'compression=gz' 'wbits=31' 'bytes=14372864' 'sha256=a3baaa5bbcb5d5698495eb157c14412fbc56cd07781f6f2ebc3cb698a1dfb2f8' '[SYSTEM]' 'encryption=1' 'delta=0' 'compression=gz' 'wbits=31' 'bytes=608743424' 'sha256='${sysfssum} >${refo}/manifest.ini
   echo "Putting into tar."
   sudo tar -C ${refo} -cvf ${refo}/temp.tar manifest.ini
   sudo tar -C ${refo} -rf ${refo}/temp.tar apq8009-robot-boot.img.gz
@@ -156,6 +156,21 @@ function buildcustom()
   echo "Renaming original OTA back to OTA"
   sudo mv ${dir}latest.tar ${dir}latest.ota
   echo "Done! Output should be in ${dir}final/${base}.${code}.ota!"
+}
+
+function cleanDirectory()
+{
+  echo "Remove the resources directory"
+  sudo rm resources
+  echo "Extracting the resources file..."
+  sudo tar -xvf resources.tar.gz
+  echo "Archiving the OTA file"
+  sudo mv ${dir}/final/*.ota ${outputDir}/
+  sudo rm -rf ${dir}/final/
+  echo "Cleaning the ota directory"
+  cd ${dir}
+  sudo rm -v !("latest.ota")
+  cd ..
 }
 
 function scptoserver()
@@ -241,6 +256,10 @@ if [ $# -gt 0 ]; then
 	    code=$4
 	    scpyn=$5
 	    scptoserver
+	    ;;
+    	  -c) 
+	    dir=$2
+	    outputDir=$3
 	    ;;
     esac
     else
