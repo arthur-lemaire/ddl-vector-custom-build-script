@@ -24,6 +24,9 @@ Custom Builds:
 `./dvcbs -m 20/`
 `./dvcbs -bf 20/ 1.8.0 20 stable`
 
+Cleaning directory
+`./dvcbs -c 20/ archive/`
+
 `-f {dir} {versionbase} {versioncode} {scp}`  this mounts OTA, copys over versionbase, versioncode, new update-engine, and prod server config, then builds
 
 `-m {dir}`   mount latest.ota
