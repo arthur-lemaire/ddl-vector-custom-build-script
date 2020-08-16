@@ -24,11 +24,11 @@ function help()
    exit 0
 }
 
-trap ctrl_c INT                                                                 
-                                                                                
+trap ctrl_c INT
+
 function ctrl_c() {
     echo -e "\n\nStopping"
-    exit 1 
+    exit 1
 }
 
 function copyfull()
@@ -69,7 +69,7 @@ function copytest()
   sudo sed -i -e 's/token-dev.api.anki.com:443/token.api.anki.com:443/g' ${dir}edits/anki/data/assets/cozmo_resources/config/server_config.json
   sudo sed -i -e 's/jdocs-dev.api.anki.com:443/jdocs.api.anki.com:443/g' ${dir}edits/anki/data/assets/cozmo_resources/config/server_config.json
 #maybe TODO : some versions also have different das events in update-engine so ill also do sed here (itll take so lonnnngggnn a)
- 
+
 }
 
 function mount()
@@ -161,16 +161,14 @@ function buildcustom()
 function cleanDirectory()
 {
   echo "Remove the resources directory"
-  sudo rm resources
+  sudo rm -rf resources
   echo "Extracting the resources file..."
   sudo tar -xvf resources.tar.gz
   echo "Archiving the OTA file"
   sudo mv ${dir}/final/*.ota ${outputDir}/
   sudo rm -rf ${dir}/final/
   echo "Cleaning the ota directory"
-  cd ${dir}
-  sudo rm -v !("latest.ota")
-  cd ..
+  sudo rm -rf ${dir}/*
 }
 
 function scptoserver()
@@ -205,63 +203,63 @@ function scptoserver()
 }
 
 
-  
+
 
 if [ $# -gt 0 ]; then
     case "$1" in
-	-h)
-	    help
+        -h)
+            help
             ;;
         -t)
             dir=$2
-	    mount
+            mount
             copytest
-	    buildtest
-            ;;
-	-f) 
-	    dir=$2
-	    base=$3
-	    code=$4
-	    mount
-	    copyfull
-	    buildcustom
-	    ;;
-	-m) 
-	    dir=$2
-	    mount
-	    ;;
-	-b) 
-	    dir=$2
-	    buildcustom
-	    ;;
-	-bf) 
-	    dir=$2
-	    base=$3
-	    code=$4
-	    copyfull
-	    buildcustom
-	    ;;
-	-mb) 
-	    dir=$2
-	    base=$3
-	    code=$4
-	    scpyn=sign
-	    mount
             buildtest
-	    scptoserver
-	    ;;
-	-sts) 
-	    dir=$2
-	    base=$3
-	    code=$4
-	    scpyn=$5
-	    scptoserver
-	    ;;
-    	  -c) 
-	    dir=$2
-	    outputDir=$3
-	    cleanDirectory
-	    ;;
+            ;;
+        -f)
+            dir=$2
+            base=$3
+            code=$4
+            mount
+            copyfull
+            buildcustom
+            ;;
+        -m)
+            dir=$2
+            mount
+            ;;
+        -b)
+            dir=$2
+            buildcustom
+            ;;
+        -bf)
+            dir=$2
+            base=$3
+            code=$4
+            copyfull
+            buildcustom
+            ;;
+        -mb)
+            dir=$2
+            base=$3
+            code=$4
+            scpyn=sign
+            mount
+            buildtest
+            scptoserver
+            ;;
+        -sts)
+            dir=$2
+            base=$3
+            code=$4
+            scpyn=$5
+            scptoserver
+            ;;
+          -c)
+            dir=$2
+            outputDir=$3
+            cleanDirectory
+            ;;
     esac
     else
         echo "Read the GitHub page before using this script!"
