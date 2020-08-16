@@ -260,6 +260,7 @@ if [ $# -gt 0 ]; then
     	  -c) 
 	    dir=$2
 	    outputDir=$3
+	    cleanDirectory
 	    ;;
     esac
     else
