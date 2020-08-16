@@ -24,11 +24,11 @@ function help()
    exit 0
 }
 
-trap ctrl_c INT                                                                 
-                                                                                
+trap ctrl_c INT
+
 function ctrl_c() {
     echo -e "\n\nStopping"
-    exit 1 
+    exit 1
 }
 
 function copyfull()
@@ -69,7 +69,7 @@ function copytest()
   sudo sed -i -e 's/token-dev.api.anki.com:443/token.api.anki.com:443/g' ${dir}edits/anki/data/assets/cozmo_resources/config/server_config.json
   sudo sed -i -e 's/jdocs-dev.api.anki.com:443/jdocs.api.anki.com:443/g' ${dir}edits/anki/data/assets/cozmo_resources/config/server_config.json
 #maybe TODO : some versions also have different das events in update-engine so ill also do sed here (itll take so lonnnngggnn a)
- 
+
 }
 
 function mount()
@@ -138,7 +138,7 @@ function buildcustom()
   sudo umount ${dir}edits
   echo "Figuring out SHA256 sum and putting it into manifest."
   sysfssum=$(sha256sum ${dir}apq8009-robot-sysfs.img | head -c 64)
-  sudo printf '%s\n' '[META]' 'manifest_version=1.0.0' 'update_version='${base}'.'${code}'d' 'ankidev=1' 'num_images=2' '[BOOT]' 'encryption=1' 'delta=0' 'compression=gz' 'wbits=31' 'bytes=13795328' 'sha256=' '[SYSTEM]' 'encryption=1' 'delta=0' 'compression=gz' 'wbits=31' 'bytes=608743424' 'sha256='${sysfssum} >${refo}/manifest.ini
+  sudo printf '%s\n' '[META]' 'manifest_version=1.0.0' 'update_version='${base}'.'${code}'d' 'ankidev=1' 'num_images=2' '[BOOT]' 'encryption=1' 'delta=0' 'compression=gz' 'wbits=31' 'bytes=14372864' 'sha256=a3baaa5bbcb5d5698495eb157c14412fbc56cd07781f6f2ebc3cb698a1dfb2f8' '[SYSTEM]' 'encryption=1' 'delta=0' 'compression=gz' 'wbits=31' 'bytes=608743424' 'sha256='${sysfssum} >${refo}/manifest.ini
   echo "Putting into tar."
   sudo tar -C ${refo} -cvf ${refo}/temp.tar manifest.ini
   sudo tar -C ${refo} -rf ${refo}/temp.tar apq8009-robot-boot.img.gz
@@ -156,6 +156,21 @@ function buildcustom()
   echo "Renaming original OTA back to OTA"
   sudo mv ${dir}latest.tar ${dir}latest.ota
   echo "Done! Output should be in ${dir}final/${base}.${code}.ota!"
+}
+
+function cleanDirectory()
+{
+  echo "Remove the resources directory"
+  sudo rm -rf resources
+  echo "Extracting the resources file..."
+  sudo tar -xvf resources.tar.gz
+  echo "Archiving the OTA file"
+  sudo cp ${dir}/final/*.ota ./latest.ota
+  sudo mv ${dir}/final/*.ota ${outputDir}/
+  sudo rm -rf ${dir}/final/
+  echo "Cleaning the ota directory"
+  sudo rm -rf ${dir}/*
+  sudo mv ./latest.ota ${dir}
 }
 
 function scptoserver()
@@ -190,58 +205,63 @@ function scptoserver()
 }
 
 
-  
+
 
 if [ $# -gt 0 ]; then
     case "$1" in
-	-h)
-	    help
+        -h)
+            help
             ;;
         -t)
             dir=$2
-	    mount
+            mount
             copytest
-	    buildtest
-            ;;
-	-f) 
-	    dir=$2
-	    base=$3
-	    code=$4
-	    mount
-	    copyfull
-	    buildcustom
-	    ;;
-	-m) 
-	    dir=$2
-	    mount
-	    ;;
-	-b) 
-	    dir=$2
-	    buildcustom
-	    ;;
-	-bf) 
-	    dir=$2
-	    base=$3
-	    code=$4
-	    copyfull
-	    buildcustom
-	    ;;
-	-mb) 
-	    dir=$2
-	    base=$3
-	    code=$4
-	    scpyn=sign
-	    mount
             buildtest
-	    scptoserver
-	    ;;
-	-sts) 
-	    dir=$2
-	    base=$3
-	    code=$4
-	    scpyn=$5
-	    scptoserver
-	    ;;
+            ;;
+        -f)
+            dir=$2
+            base=$3
+            code=$4
+            mount
+            copyfull
+            buildcustom
+            ;;
+        -m)
+            dir=$2
+            mount
+            ;;
+        -b)
+            dir=$2
+            buildcustom
+            ;;
+        -bf)
+            dir=$2
+            base=$3
+            code=$4
+            copyfull
+            buildcustom
+            ;;
+        -mb)
+            dir=$2
+            base=$3
+            code=$4
+            scpyn=sign
+            mount
+            buildtest
+            scptoserver
+            ;;
+        -sts)
+            dir=$2
+            base=$3
+            code=$4
+            scpyn=$5
+            scptoserver
+            ;;
+          -c)
+            dir=$2
+            outputDir=$3
+            cleanDirectory
+            ;;
     esac
     else
         echo "Read the GitHub page before using this script!"
