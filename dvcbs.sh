@@ -165,10 +165,12 @@ function cleanDirectory()
   echo "Extracting the resources file..."
   sudo tar -xvf resources.tar.gz
   echo "Archiving the OTA file"
+  sudo cp ${dir}/final/*.ota ./latest.ota
   sudo mv ${dir}/final/*.ota ${outputDir}/
   sudo rm -rf ${dir}/final/
   echo "Cleaning the ota directory"
   sudo rm -rf ${dir}/*
+  sudo mv ./latest.ota ${dir}
 }
 
 function scptoserver()
