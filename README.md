@@ -39,4 +39,5 @@ Cleaning directory
 
 `-mb {dir} {versionbase} {versioncode}`   only mounts then builds. used for testing super old firmware
 
+`-c {dir} {outputDir}`   Clear the Ota's dir and put into output directory, also reset resources folder
 
